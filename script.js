@@ -399,21 +399,54 @@ function setupEnquiryForm(products) {
     });
   }
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (loadCart().length === 0) {
       return;
     }
 
-    successBanner.hidden = false;
-    form.reset();
-    if (enquiryMessage) {
-      delete enquiryMessage.dataset.edited;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+
+    try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending Enquiry...";
+
+      const response = await fetch("https://formspree.io/f/maqlzyoe", {
+        method: "POST",
+        body: new FormData(form),
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send enquiry via Formspree.");
+      }
+
+      successBanner.hidden = false;
+      form.reset();
+      
+      if (enquiryMessage) {
+        delete enquiryMessage.dataset.edited;
+      }
+      
+      saveCart([]);
+      updateCartUi(products);
+      renderStorefront();
+
+      setTimeout(() => {
+        successBanner.hidden = true;
+      }, 5000);
+
+    } catch (error) {
+      console.error("Email Error:", error);
+      alert("Failed to send enquiry: " + (error.text || error.message || "Unknown error"));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
     }
-    saveCart([]);
-    updateCartUi(products);
-    renderStorefront(products);
   });
 }
 
