@@ -43,11 +43,17 @@
             <h1>VoltKart Admin Panel</h1>
           </div>
         </div>
-        <a class="ghost-link" href="index.html">Back to Storefront</a>
+        <div class="topbar-actions">
+          <div class="admin-tabs">
+            <button class="tab-btn active" data-target="inventory-view">Inventory</button>
+            <button class="tab-btn" data-target="leads-view">Leads Dashboard</button>
+          </div>
+          <a class="ghost-link" href="index.html">Back to Storefront</a>
+        </div>
       </nav>
     </header>
 
-    <main class="admin-grid">
+    <main id="inventory-view" class="admin-grid active-view">
       <section class="admin-form-card">
         <div class="section-heading">
           <div>
@@ -73,15 +79,18 @@
               <option value="Passive Components">Passive Components</option>
             </select>
           </label>
+          <div class="input-row" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px;">
+            <label>
+              Price (Rs.)
+              <input name="price" type="number" step="any" placeholder="0.00" required>
+            </label>
+            <label>
+              SKU (Auto Suggested)
+              <input id="product-sku-input" name="sku" type="text" placeholder="VK-XXXX-0000" required>
+            </label>
+          </div>
           <label>
-            Price (in Rs.)
-            <div class="input-group">
-              <span class="input-prefix">Rs.</span>
-              <input name="price" type="number" min="0" step="any" placeholder="0.00" required>
-            </div>
-          </label>
-          <label>
-            Stock note
+            Stock Status
             <input name="stock" type="text" placeholder="18 units available" required>
           </label>
           <label>
@@ -90,7 +99,7 @@
           </label>
           <label>
             Short description
-            <textarea name="description" rows="4" placeholder="Dual-core Wi-Fi + Bluetooth development board" required></textarea>
+            <textarea name="description" rows="3" placeholder="Technical specifications..." required></textarea>
           </label>
           <button class="primary-button" type="submit">Add Product</button>
         </form>
@@ -131,8 +140,20 @@
         <div id="admin-product-list" class="admin-product-list"></div>
       </section>
     </main>
+
+    <main id="leads-view" class="admin-leads-wrapper" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="section-tag">Sales Pipeline</p>
+          <h2>Real-time Enquiry Dashboard</h2>
+        </div>
+      </div>
+      <div id="leads-feed" class="leads-feed-grid">
+        <div class="empty-state">Loading latest enquiries...</div>
+      </div>
+    </main>
     <footer class="site-footer-mini">
-      <p>© 2026 VoltKart Admin | Powered by TVE</p>
+      <p>© 2026 VoltKart Admin | Powered by KBW</p>
     </footer>
   </div>
 

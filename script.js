@@ -211,22 +211,27 @@ function renderCategorySelect(categories) {
 async function renderStorefront() {
   const grid = document.getElementById("product-grid");
   const count = document.getElementById("product-count");
-  const searchInput = document.getElementById("search-input");
   
-  if (!grid || !count || !searchInput) return;
+  // Connect both the old search (if present) and the new header search
+  const searchInput = document.getElementById("search-input");
+  const storeSearch = document.getElementById("store-search");
+  
+  if (!grid) return;
 
   const products = await loadProducts();
   const categories = await loadCategories();
 
   const updateGrid = () => {
     const cart = loadCart();
-    const term = searchInput.value.trim().toLowerCase();
+    // Get search term from whichever input is active/present
+    const term = (storeSearch?.value || searchInput?.value || "").trim().toLowerCase();
+    
     const filtered = products.filter((product) => {
-      const haystack = `${product.name} ${product.category} ${product.description}`.toLowerCase();
+      const haystack = `${product.name} ${product.category} ${product.description} ${product.sku || ''}`.toLowerCase();
       return haystack.includes(term);
     });
 
-    count.textContent = String(products.length);
+    if (count) count.textContent = String(products.length);
 
     if (filtered.length === 0) {
       grid.innerHTML = '<div class="empty-state">No matching components found. Try a different keyword.</div>';
@@ -237,7 +242,9 @@ async function renderStorefront() {
     attachStorefrontActions(products, updateGrid);
   };
 
-  searchInput.oninput = updateGrid;
+  if (searchInput) searchInput.oninput = updateGrid;
+  if (storeSearch) storeSearch.oninput = updateGrid;
+
   renderCategoryStrip(categories, updateGrid);
   updateGrid();
 }
@@ -384,14 +391,24 @@ function attachCartActions(products) {
   }
 }
 
+async function saveLead(leadData) {
+  try {
+    await addDoc(collection(db, "leads"), {
+      ...leadData,
+      status: 'pending',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Error saving lead recording:", error);
+  }
+}
+
 function setupEnquiryForm(products) {
   const form = document.getElementById("enquiry-form");
   const successBanner = document.getElementById("enquiry-success");
   const enquiryMessage = document.getElementById("enquiry-message");
 
-  if (!form || !successBanner) {
-    return;
-  }
+  if (!form || !successBanner) return;
 
   if (enquiryMessage) {
     enquiryMessage.addEventListener("input", () => {
@@ -402,9 +419,7 @@ function setupEnquiryForm(products) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if (loadCart().length === 0) {
-      return;
-    }
+    if (loadCart().length === 0) return;
 
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
@@ -413,41 +428,102 @@ function setupEnquiryForm(products) {
       submitBtn.disabled = true;
       submitBtn.textContent = "Sending Enquiry...";
 
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      // 1. Permanent Lead Record in Dashboard
+      await saveLead(data);
+
+      // 2. Email Notification via Formspree
       const response = await fetch("https://formspree.io/f/maqlzyoe", {
         method: "POST",
-        body: new FormData(form),
-        headers: {
-          'Accept': 'application/json'
-        }
+        body: formData,
+        headers: { 'Accept': 'application/json' }
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to send enquiry via Formspree.");
-      }
+      if (!response.ok) throw new Error("Email service failed.");
 
       successBanner.hidden = false;
       form.reset();
-      
-      if (enquiryMessage) {
-        delete enquiryMessage.dataset.edited;
-      }
-      
+      if (enquiryMessage) delete enquiryMessage.dataset.edited;
       saveCart([]);
       updateCartUi(products);
       renderStorefront();
 
-      setTimeout(() => {
-        successBanner.hidden = true;
-      }, 5000);
-
+      setTimeout(() => { successBanner.hidden = true; }, 5000);
     } catch (error) {
-      console.error("Email Error:", error);
-      alert("Failed to send enquiry: " + (error.text || error.message || "Unknown error"));
+      console.error("Submission Error:", error);
+// Admin Dashboard Helpers
+function setupAdminTabs() {
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.dataset.target;
+      
+      // Update UI
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      // Toggle Views
+      document.querySelectorAll('main').forEach(view => {
+        view.hidden = (view.id !== targetId);
+      });
+    });
+  });
+}
+
+function setupLeadsDashboard() {
+  const leadsFeed = document.getElementById('leads-feed');
+  if (!leadsFeed) return;
+
+  onSnapshot(query(collection(db, "leads"), orderBy("timestamp", "desc")), (snapshot) => {
+    const leads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    if (leads.length === 0) {
+      leadsFeed.innerHTML = '<div class="empty-state">No leads yet. Customer enquiries will appear here.</div>';
+      return;
+    }
+
+    leadsFeed.innerHTML = leads.map(lead => `
+      <div class="lead-card">
+        <div class="lead-header">
+          <div>
+            <span class="lead-status ${lead.status || 'pending'}">${lead.status || 'pending'}</span>
+            <p class="time">${new Date(lead.timestamp).toLocaleString()}</p>
+          </div>
+          <h4>Enquiry from ${lead.name || 'Anonymous User'}</h4>
+        </div>
+        <p class="customer"><strong>Email:</strong> ${lead.email || 'N/A'} | <strong>Phone:</strong> ${lead.phone || 'N/A'}</p>
+        <div class="items">
+          <strong>Enquiry Details:</strong>\n${lead.message || 'No message provided.'}
+        </div>
+      </div>
+    `).join('');
+  });
+}
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
     }
   });
+}
+
+// Admin Automation: SKU Generation
+function handleSkuSuggestion() {
+  const catSelect = document.getElementById('category-select');
+  const skuInput = document.getElementById('product-sku-input');
+  
+  if (catSelect && skuInput) {
+    catSelect.addEventListener('change', () => {
+      const cat = catSelect.value;
+      const prefix = "VK";
+      const catCode = cat.substring(0, 4).toUpperCase();
+      const random = Math.floor(1000 + Math.random() * 9000);
+      if (!skuInput.value) {
+        skuInput.value = `${prefix}-${catCode}-${random}`;
+      }
+    });
+  }
 }
 
 function createAdminProductItem(product) {
@@ -566,6 +642,7 @@ async function setupEditLogic() {
       const updateData = {
         name: formData.get("name").trim(),
         category: formData.get("category"),
+        sku: formData.get("sku")?.trim() || "",
         price: `Rs. ${formData.get("price")} / piece`,
         stock: formData.get("stock").trim(),
         description: formData.get("description").trim(),
@@ -629,6 +706,7 @@ async function setupAdminForm() {
     const newProduct = {
       name: String(formData.get("name") || "").trim(),
       category: String(formData.get("category") || "").trim(),
+      sku: String(formData.get("sku") || "").trim(),
       price: `Rs. ${formData.get("price")} / piece`,
       stock: String(formData.get("stock") || "").trim(),
       description: String(formData.get("description") || "").trim(),
@@ -805,6 +883,9 @@ async function initializePage() {
       await setupAdminForm();
       await setupCategoryForm();
       await setupEditLogic();
+      setupAdminTabs();
+      setupLeadsDashboard();
+      handleSkuSuggestion();
     }
   } catch (err) {
     console.warn("Data loading partial failure:", err);
