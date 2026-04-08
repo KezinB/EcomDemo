@@ -107,7 +107,7 @@ function createProductCard(product, cart) {
   const inCart = cart.find((item) => item.id === product.id);
 
   return `
-    <article class="product-card">
+    <article class="product-card" data-trigger="details" data-product-id="${product.id}">
       <div class="product-image-wrap">
         <img class="product-image" src="${getProductImage(product)}" alt="${product.name}">
       </div>
@@ -337,15 +337,6 @@ function removeFromCart(productId) {
 }
 
 function attachStorefrontActions(products, rerenderProducts) {
-  document.querySelectorAll(".add-to-cart").forEach((button) => {
-    button.addEventListener("click", () => {
-      addToCart(button.dataset.productId);
-      updateCartUi(products);
-      rerenderProducts();
-      toggleCart(true); // Automatically show cart for feedback
-    });
-  });
-
   document.querySelectorAll(".read-more-btn").forEach((button) => {
     button.addEventListener("click", () => {
       const desc = document.getElementById(`desc-${button.dataset.productId}`);
@@ -648,6 +639,52 @@ async function setupCategoryForm() {
 
 function toggleCart(isOpen) {
   document.body.classList.toggle("cart-open", isOpen);
+  if (isOpen) toggleDetails(false); // Close details if cart opens
+}
+
+function toggleDetails(isOpen) {
+  document.body.classList.toggle("details-open", isOpen);
+}
+
+async function openProductDetails(productId) {
+  const products = await loadProducts();
+  const product = products.find(p => p.id === productId);
+  if (!product) return;
+
+  const content = document.getElementById('details-content');
+  if (!content) return;
+
+  const cart = loadCart();
+  const inCart = cart.find(item => item.id === product.id);
+
+  content.innerHTML = `
+    <img class="details-hero-image" src="${getProductImage(product)}" alt="${product.name}">
+    <div class="details-info">
+      <span class="pill">${product.category}</span>
+      <h2>${product.name}</h2>
+      <div class="details-meta-grid">
+        <div class="details-meta-item">
+          <span>Price</span>
+          <strong>${product.price}</strong>
+        </div>
+        <div class="details-meta-item">
+          <span>Availability</span>
+          <strong>${product.stock}</strong>
+        </div>
+      </div>
+      <div class="details-description">
+        ${product.description}
+      </div>
+      <div class="details-actions">
+        <button class="primary-button add-to-cart" data-product-id="${product.id}">
+          ${inCart ? "Add More to Enquiry" : "Add to Enquiry List"}
+        </button>
+        <button class="secondary-button" onclick="toggleDetails(false)">Continue Browsing</button>
+      </div>
+    </div>
+  `;
+
+  toggleDetails(true);
 }
 
 function setupScrollProgress() {
@@ -679,15 +716,44 @@ async function initializePage() {
 
     // Global listener for all Cart Open triggers (Header, Hero, etc.)
     document.addEventListener('click', (e) => {
-      const trigger = e.target.closest('[href="#cart-panel"], .cart-chip');
-      if (trigger) {
+      // Cart Trigger
+      const cartTrigger = e.target.closest('[href="#cart-panel"], .cart-chip');
+      if (cartTrigger) {
         e.preventDefault();
         toggleCart(true);
+        return;
+      }
+
+      // Add to Cart (Delegated for static and dynamic buttons)
+      const addBtn = e.target.closest('.add-to-cart');
+      if (addBtn) {
+        addToCart(addBtn.dataset.productId);
+        updateCartUi(products);
+        renderStorefront(); // Refresh grid to show "in cart" status
+        toggleCart(true);   // Show feedback
+        return;
+      }
+
+      // Details Trigger
+      const detailsTrigger = e.target.closest('[data-trigger="details"]');
+      const actionButton = e.target.closest('button, .read-more-btn');
+      
+      // Open details ONLY if we clicked the card and NOT a button inside it
+      if (detailsTrigger && !actionButton) {
+        openProductDetails(detailsTrigger.dataset.productId);
+        return;
       }
     });
 
-    if (closeBtn) closeBtn.addEventListener('click', () => toggleCart(false));
-    if (overlay) overlay.addEventListener('click', () => toggleCart(false));
+    const closeCartBtn = document.getElementById('close-cart');
+    const cartOverlay = document.getElementById('cart-overlay');
+    const closeDetailsBtn = document.getElementById('close-details');
+    const detailsOverlay = document.getElementById('details-overlay');
+
+    if (closeCartBtn) closeCartBtn.addEventListener('click', () => toggleCart(false));
+    if (cartOverlay) cartOverlay.addEventListener('click', () => toggleCart(false));
+    if (closeDetailsBtn) closeDetailsBtn.addEventListener('click', () => toggleDetails(false));
+    if (detailsOverlay) detailsOverlay.addEventListener('click', () => toggleDetails(false));
   }
 
   // Now load data

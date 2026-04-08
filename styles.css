@@ -379,7 +379,108 @@ body.cart-open .cart-panel {
   pointer-events: auto;
 }
 
-.cart-overlay {
+body.cart-open .cart-overlay,
+body.details-open .details-overlay {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  z-index: 10000;
+}
+
+.details-panel {
+  position: fixed;
+  top: 0;
+  right: -550px;
+  width: 520px;
+  max-width: 95vw;
+  height: 100vh;
+  z-index: 10001;
+  background: white;
+  box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 32px;
+  border-radius: 40px 0 0 40px;
+  overflow-y: auto;
+  border-left: 1px solid rgba(15, 23, 42, 0.1);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.details-open .details-panel {
+  right: 0;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.details-panel-head {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.details-hero-image {
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: 28px;
+  object-fit: cover;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+
+.details-info h2 {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+
+.details-description {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin: 24px 0;
+}
+
+.details-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 28px 0;
+  padding: 20px;
+  background: #f8fbff;
+  border-radius: 20px;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+}
+
+.details-meta-item {
+  display: grid;
+  gap: 4px;
+}
+
+.details-meta-item span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.details-meta-item strong {
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+
+.details-actions {
+  display: grid;
+  gap: 12px;
+  position: sticky;
+  bottom: 0;
+  padding-top: 20px;
+  background: linear-gradient(0deg, white 80%, transparent);
+}
+
+.cart-overlay,
+.details-overlay {
   position: fixed;
   inset: 0;
   background: rgba(18, 32, 51, 0.3);
@@ -389,13 +490,6 @@ body.cart-open .cart-panel {
   pointer-events: none;
   visibility: hidden;
   transition: opacity 0.4s ease, visibility 0.4s;
-}
-
-body.cart-open .cart-overlay {
-  opacity: 1;
-  pointer-events: auto;
-  visibility: visible;
-  z-index: 10000;
 }
 
 .cart-head-actions {

@@ -11,8 +11,17 @@
 </head>
 <body data-page="storefront">
   <div id="scroll-progress" class="scroll-progress-bar"></div>
-  <div id="cart-overlay" class="cart-overlay"></div>
+  <div id="details-overlay" class="details-overlay"></div>
   
+  <aside class="details-panel" id="details-panel">
+    <div class="details-panel-head">
+      <button id="close-details" class="close-icon-circular" type="button">&times;</button>
+    </div>
+    <div id="details-content" class="details-content">
+      <!-- Dynamically populated -->
+    </div>
+  </aside>
+
   <aside class="cart-panel" id="cart-panel">
     <div class="cart-panel-head">
       <div>
