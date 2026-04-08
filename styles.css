@@ -853,14 +853,14 @@ textarea {
 .about-layout {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 40px var(--side-padding) 120px;
+  padding: 200px var(--side-padding) 120px !important;
   display: grid;
   gap: 120px;
 }
 
 .about-hero {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 60px auto 0;
   text-align: center;
 }
 
