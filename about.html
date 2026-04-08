@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | VoltKart Components</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="about">
+  <div id="scroll-progress" class="scroll-progress-bar"></div>
+  <div id="cart-overlay" class="cart-overlay"></div>
+  
+  <aside class="cart-panel" id="cart-panel">
+    <div class="cart-panel-head">
+      <div>
+        <p class="section-tag">Enquiry Cart</p>
+        <h3>Build your requirement list</h3>
+      </div>
+      <div class="cart-head-actions">
+        <button id="clear-cart" class="secondary-button compact-button" type="button">Clear Cart</button>
+        <button id="close-cart" class="close-icon-circular" type="button">&times;</button>
+      </div>
+    </div>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-summary">
+      <div class="cart-summary-row"><span>Total lines</span><strong id="cart-line-count">0</strong></div>
+      <div class="cart-summary-row"><span>Total quantity</span><strong id="cart-quantity-count">0</strong></div>
+    </div>
+    <form id="enquiry-form" class="enquiry-form cart-form">
+      <label>Your name<input id="customer-name" name="customerName" type="text" placeholder="Enter your name" required></label>
+      <label>Email address<input id="customer-email" name="customerEmail" type="email" placeholder="you@example.com" required></label>
+      <label>Phone number<input id="customer-phone" name="phone" type="tel" placeholder="+91 00000 00000" required></label>
+      <label>Company or project<input id="customer-company" name="company" type="text" placeholder="Optional"></label>
+      <label>Cart summary<textarea id="enquiry-product" name="productName" rows="4" placeholder="Selected cart items will appear here" required></textarea></label>
+      <label>Message<textarea id="enquiry-message" name="message" rows="4" placeholder="Share delivery location, target quantity, or any technical requirement." required></textarea></label>
+      <button id="submit-enquiry" class="primary-button" type="submit">Send Cart Enquiry</button>
+    </form>
+    <div id="enquiry-success" class="success-banner" hidden>
+      Enquiry received and saved to the cloud!
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <header class="hero compact-hero">
+      <nav class="topbar">
+        <div class="brand">
+          <span class="brand-mark">VK</span>
+          <div>
+            <p class="eyebrow">Our Story</p>
+            <h1>About VoltKart</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <a class="nav-link" href="index.html">Shop</a>
+          <a class="nav-link active-link" href="about.html">About</a>
+          <a class="cart-chip" href="#cart-panel">
+            <span>Cart</span>
+            <strong id="cart-count">0</strong>
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="about-layout">
+      <section class="about-hero">
+        <div class="about-content">
+          <p class="section-tag">Empowering Innovation</p>
+          <h2>The bridge between brilliant ideas and reliable hardware.</h2>
+          <p class="large-text">VoltKart was born from a simple realization: finding genuine, high-quality electronic components shouldn't be a hurdle for innovation. We specialize in sourcing and delivering the building blocks of the modern world.</p>
+        </div>
+      </section>
+
+      <section class="values-section">
+        <div class="section-heading">
+          <div>
+            <p class="section-tag">Core Values</p>
+            <h3>What drives every VoltKart enquiry</h3>
+          </div>
+        </div>
+        <div class="values-grid">
+          <div class="value-card">
+            <div class="value-icon">💎</div>
+            <h4>Quality First</h4>
+            <p>Every component in our catalog is rigorously verified. We don't just sell parts; we sell peace of mind for your production line.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">⚡</div>
+            <h4>Engineering Speed</h4>
+            <p>We understand the urgency of development cycles. Our procurement workflow is optimized for speed without compromising accuracy.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">🛠️</div>
+            <h4>Technical Expertise</h4>
+            <p>We are engineers at heart. Our team speaks your language, ensuring you get exactly the specifications your project demands.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="workflow-section">
+        <div class="workflow-card glass-card">
+          <div class="section-heading">
+            <div>
+              <p class="section-tag">Process</p>
+              <h3>How we fulfill your requirements</h3>
+            </div>
+          </div>
+          <div class="workflow-steps">
+            <div class="step">
+              <span class="step-num">01</span>
+              <div>
+                <strong>Curate</strong>
+                <p>Browse our verified catalog and add components to your enquiry list.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-num">02</span>
+              <div>
+                <strong>Enquire</strong>
+                <p>Submit your requirement list with technical notes and volume targets.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-num">03</span>
+              <div>
+                <strong>Deliver</strong>
+                <p>Our team provides a custom quote and coordinates logistics for your delivery.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer-mini">
+      <p>© 2026 VoltKart Marketplace | Designed with ❤️ by KBW</p>
+    </footer>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
