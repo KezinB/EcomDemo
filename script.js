@@ -115,9 +115,12 @@ function createProductCard(product, cart) {
         <span class="pill">${product.category}</span>
         <span class="pill stock-pill">${product.stock}</span>
       </div>
-      <div>
+      <div class="product-info-grid">
         <h4>${product.name}</h4>
-        <p>${product.description}</p>
+        <div class="description-clamp" id="desc-${product.id}">
+          ${product.description}
+        </div>
+        ${product.description.length > 60 ? `<button class="read-more-btn" type="button" data-product-id="${product.id}">Read More</button>` : ""}
       </div>
       <div class="product-meta">
         <span class="price-tag">${product.price}</span>
@@ -340,6 +343,16 @@ function attachStorefrontActions(products, rerenderProducts) {
       updateCartUi(products);
       rerenderProducts();
       toggleCart(true); // Automatically show cart for feedback
+    });
+  });
+
+  document.querySelectorAll(".read-more-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const desc = document.getElementById(`desc-${button.dataset.productId}`);
+      if (desc) {
+        const isExpanded = desc.classList.toggle("expanded");
+        button.textContent = isExpanded ? "Read Less" : "Read More";
+      }
     });
   });
 

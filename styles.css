@@ -562,6 +562,32 @@ textarea {
   line-height: 1.65;
 }
 
+.description-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px !important;
+  font-size: 0.94rem;
+}
+
+.description-clamp.expanded {
+  -webkit-line-clamp: unset;
+  display: block;
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: var(--accent-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0;
+  cursor: pointer;
+  margin-bottom: 12px;
+  text-decoration: none;
+}
+
 .price-tag {
   font-weight: 700;
   color: var(--ink);
