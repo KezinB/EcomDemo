@@ -851,7 +851,9 @@ textarea {
 
 /* About Page Layout */
 .about-layout {
-  padding: 60px 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px var(--side-padding) 120px;
   display: grid;
   gap: 120px;
 }
