@@ -9,7 +9,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="admin">
+<body data-page="admin" class="auth-locked">
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-card">
+      <div class="brand-narrow">
+        <span class="brand-mark">VK</span>
+        <p>Admin Access</p>
+      </div>
+      <h2>Secure Login</h2>
+      <p class="login-hint">Please enter your credentials to manage the storefront.</p>
+      <form id="login-form">
+        <label>
+          Username
+          <input type="text" id="login-username" placeholder="Admin" required>
+        </label>
+        <label>
+          Password
+          <input type="password" id="login-password" placeholder="••••••••" required>
+        </label>
+        <button type="submit" class="primary-button full-width">Unlock Panel</button>
+        <div id="login-error" class="error-text" hidden>Incorrect credentials. Please try again.</div>
+      </form>
+    </div>
+  </div>
+
   <div class="page-shell admin-shell">
     <header class="hero compact-hero">
       <nav class="topbar">
@@ -161,6 +184,64 @@
     </div>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <script type="module">
+    // --- AUTHENTICATION LOGIC ---
+    const EXPECTED_USER = "Admin";
+    const EXPECTED_PASS = "Admin@1234";
+    const AUTH_KEY = "voltkart_admin_auth";
+
+    const body = document.body;
+    const loginOverlay = document.getElementById('login-overlay');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+
+    function checkAuth() {
+      const isAuth = sessionStorage.getItem(AUTH_KEY);
+      if (isAuth === "true") {
+        unlockPanel();
+      }
+    }
+
+    function unlockPanel() {
+      body.classList.remove('auth-locked');
+      loginOverlay.classList.add('hidden');
+      setTimeout(() => {
+        loginOverlay.style.display = 'none';
+      }, 600);
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = document.getElementById('login-username').value;
+      const pass = document.getElementById('login-password').value;
+
+      if (user === EXPECTED_USER && pass === EXPECTED_PASS) {
+        sessionStorage.setItem(AUTH_KEY, "true");
+        unlockPanel();
+      } else {
+        loginError.hidden = false;
+        // Shake animation for the card
+        const card = document.querySelector('.login-card');
+        card.style.animation = 'none';
+        void card.offsetWidth; // trigger reflow
+        card.style.animation = 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both';
+      }
+    });
+
+    // Run initial check
+    checkAuth();
+
+    // Import main script late to avoid side effects before auth check
+    import('./script.js');
+  </script>
+
+  <style>
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+  </style>
 </body>
 </html>
