@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoltKart Components</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="storefront">
+  <div id="scroll-progress" class="scroll-progress-bar"></div>
+  <div id="cart-overlay" class="cart-overlay"></div>
+  
+  <aside class="cart-panel" id="cart-panel">
+    <div class="cart-panel-head">
+      <div>
+        <p class="section-tag">Enquiry Cart</p>
+        <h3>Build your requirement list</h3>
+      </div>
+      <div class="cart-head-actions">
+        <button id="clear-cart" class="secondary-button compact-button" type="button">Clear Cart</button>
+        <button id="close-cart" class="close-icon-circular" type="button">&times;</button>
+      </div>
+    </div>
+
+    <div id="cart-items" class="cart-items"></div>
+
+    <div class="cart-summary">
+      <div class="cart-summary-row">
+        <span>Total lines</span>
+        <strong id="cart-line-count">0</strong>
+      </div>
+      <div class="cart-summary-row">
+        <span>Total quantity</span>
+        <strong id="cart-quantity-count">0</strong>
+      </div>
+    </div>
+
+    <form id="enquiry-form" class="enquiry-form cart-form">
+      <label>
+        Your name
+        <input id="customer-name" name="customerName" type="text" placeholder="Enter your name" required>
+      </label>
+      <label>
+        Email address
+        <input id="customer-email" name="customerEmail" type="email" placeholder="you@example.com" required>
+      </label>
+      <label>
+        Company or project
+        <input id="customer-company" name="company" type="text" placeholder="Optional">
+      </label>
+      <label>
+        Cart summary
+        <textarea id="enquiry-product" name="productName" rows="4" placeholder="Selected cart items will appear here" required></textarea>
+      </label>
+      <label>
+        Message
+        <textarea id="enquiry-message" name="message" rows="4" placeholder="Share delivery location, target quantity, or any technical requirement." required></textarea>
+      </label>
+      <button id="submit-enquiry" class="primary-button" type="submit">Send Cart Enquiry</button>
+    </form>
+
+    <div id="enquiry-success" class="success-banner" hidden>
+      Enquiry received and saved to the cloud! In a live version, this would alert your team via WhatsApp or Email.
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <header class="hero modern-hero">
+      <nav class="topbar">
+        <div class="brand">
+          <span class="brand-mark">VK</span>
+          <div>
+            <p class="eyebrow">Electronic Components Marketplace</p>
+            <h1>VoltKart Components</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <a class="nav-link" href="#catalog">Shop</a>
+          <a class="nav-link" href="#category-strip">Categories</a>
+          <a class="ghost-link" href="admin.html">Admin Panel</a>
+          <a class="cart-chip" href="#cart-panel">
+            <span>Cart</span>
+            <strong id="cart-count">0</strong>
+          </a>
+        </div>
+      </nav>
+
+      <div class="hero-grid modern-grid">
+        <section class="hero-copy">
+          <p class="section-tag">Trusted sourcing for makers, labs, and small production teams</p>
+          <h2>Shop electronic components with enquiry-based checkout.</h2>
+          <p class="hero-text">
+            Browse parts, add them to cart, and send one enquiry for pricing and availability.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-button" href="#catalog">Shop Components</a>
+            <a class="secondary-button" href="#cart-panel">Open Enquiry Cart</a>
+          </div>
+          <div class="metric-row">
+            <article class="metric-card">
+              <strong id="product-count">0</strong>
+              <span>products live</span>
+            </article>
+            <article class="metric-card">
+              <strong id="cart-items-metric">0</strong>
+              <span>items in cart</span>
+            </article>
+            <article class="metric-card">
+              <strong>24h</strong>
+              <span>quote response</span>
+            </article>
+          </div>
+        </section>
+
+        <aside class="hero-showcase">
+          <div class="signal-card highlight-card">
+            <p class="section-tag">Featured This Week</p>
+            <h3>Starter kits, boards, and modules ready to source</h3>
+            <p>Built for educational orders, rapid prototypes, and repeat component enquiries.</p>
+            <div class="showcase-tags">
+              <span class="mini-pill">ESP32</span>
+              <span class="mini-pill">Arduino</span>
+              <span class="mini-pill">Sensors</span>
+              <span class="mini-pill">Motor Drivers</span>
+            </div>
+          </div>
+          <!-- 
+          <div class="signal-card trust-card">
+            <div class="trust-row">
+              <strong>Bulk pricing</strong>
+              <span>Available on enquiry</span>
+            </div>
+            <div class="trust-row">
+              <strong>Inventory updates</strong>
+              <span>Local stock snapshots</span>
+            </div>
+            <div class="trust-row">
+              <strong>Checkout model</strong>
+              <span>No payment gateway required</span>
+            </div>
+          </div>
+          -->
+        </aside>
+      </div>
+    </header>
+
+    <main class="storefront-layout">
+      <section class="catalog-section" id="catalog">
+        <div class="category-strip" id="category-strip">
+          <button class="category-chip active-chip" type="button" data-filter="all">All Products</button>
+          <button class="category-chip" type="button" data-filter="Development Boards">Development Boards</button>
+          <button class="category-chip" type="button" data-filter="IoT Modules">IoT Modules</button>
+          <button class="category-chip" type="button" data-filter="Sensors">Sensors</button>
+          <button class="category-chip" type="button" data-filter="Displays">Displays</button>
+          <button class="category-chip" type="button" data-filter="Power & Motion">Power & Motion</button>
+        </div>
+        <div class="section-heading">
+          <div>
+            <p class="section-tag">Catalog</p>
+            <h3>Browse electronic components</h3>
+          </div>
+          <label class="search-field">
+            <span>Search parts</span>
+            <input id="search-input" type="search" placeholder="Try ESP32, sensor, resistor...">
+          </label>
+        </div>
+        <div id="product-grid" class="product-grid" aria-live="polite"></div>
+      </section>
+    </main>
+    
+    <footer class="site-footer-mini">
+      <p>© 2026 VoltKart Marketplace | Designed with ❤️ by KBW</p>
+    </footer>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

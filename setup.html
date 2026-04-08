@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Setup | VoltKart</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--surface-soft);
+    }
+    .setup-card {
+      background: white;
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    #log {
+      text-align: left;
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 15px;
+      background: var(--surface-soft);
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: monospace;
+    }
+    .status {
+      font-weight: 600;
+      margin: 20px 0;
+    }
+    .done-msg {
+      margin-top: 30px;
+      padding: 20px;
+      background: #ecfdf5;
+      color: #065f46;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="setup-card">
+    <h1>VoltKart Setup</h1>
+    <p>This will seed your Firebase database with default products and categories.</p>
+    
+    <button id="seed-btn" class="primary-button" style="width: auto;">Start Seeding Now</button>
+    
+    <div id="status-line" class="status">Waiting to start...</div>
+    <div id="log"></div>
+
+    <div id="done-msg" class="done-msg" hidden>
+      <h3>🎉 Setup Complete!</h3>
+      <p>Your database is ready. You can now close this page and delete <b>setup.html</b> and <b>seed.js</b>.</p>
+      <a href="index.html" class="text-button" style="display: inline-block; margin-top: 10px;">Go to Storefront</a>
+    </div>
+  </div>
+
+  <script type="module" src="seed.js"></script>
+</body>
+</html>

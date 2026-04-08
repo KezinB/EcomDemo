@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoltKart Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="admin">
+  <div class="page-shell admin-shell">
+    <header class="hero compact-hero">
+      <nav class="topbar">
+        <div class="brand">
+          <span class="brand-mark">VK</span>
+          <div>
+            <p class="eyebrow">Product Management</p>
+            <h1>VoltKart Admin Panel</h1>
+          </div>
+        </div>
+        <a class="ghost-link" href="index.html">Back to Storefront</a>
+      </nav>
+    </header>
+
+    <main class="admin-grid">
+      <section class="admin-form-card">
+        <div class="section-heading">
+          <div>
+            <p class="section-tag">Add Product</p>
+            <h2>Create a new electronic component listing</h2>
+          </div>
+        </div>
+
+        <form id="admin-form" class="admin-form">
+          <label>
+            Product name
+            <input name="name" type="text" placeholder="ESP32 Dev Board" required>
+          </label>
+          <label>
+            Category
+            <select id="category-select" name="category" required>
+              <option value="" disabled selected>Select a category</option>
+              <option value="Development Boards">Development Boards</option>
+              <option value="IoT Modules">IoT Modules</option>
+              <option value="Sensors">Sensors</option>
+              <option value="Displays">Displays</option>
+              <option value="Power & Motion">Power & Motion</option>
+              <option value="Passive Components">Passive Components</option>
+            </select>
+          </label>
+          <label>
+            Price (in Rs.)
+            <div class="input-group">
+              <span class="input-prefix">Rs.</span>
+              <input name="price" type="number" min="0" step="any" placeholder="0.00" required>
+            </div>
+          </label>
+          <label>
+            Stock note
+            <input name="stock" type="text" placeholder="18 units available" required>
+          </label>
+          <label>
+            Product Image
+            <input id="image-input" name="image" type="file" accept="image/*">
+          </label>
+          <label>
+            Short description
+            <textarea name="description" rows="4" placeholder="Dual-core Wi-Fi + Bluetooth development board" required></textarea>
+          </label>
+          <button class="primary-button" type="submit">Add Product</button>
+        </form>
+
+        <div id="admin-success" class="success-banner" hidden>
+          Product successfully synced to Firebase Cloud.
+        </div>
+
+        <hr style="margin: 32px 0; border: 1px solid var(--line); opacity: 0.5;">
+
+        <div class="category-manager">
+          <div class="section-heading">
+            <div>
+              <p class="section-tag">Manage Categories</p>
+              <h3>Add a new product category</h3>
+            </div>
+          </div>
+          <form id="category-form" class="admin-form" style="margin-top: 16px;">
+            <label>
+              New Category Name
+              <input id="new-category-name" name="categoryName" type="text" placeholder="e.g., Robotics, Audio" required>
+            </label>
+            <button class="primary-button" type="submit">Register Category</button>
+          </form>
+          <div id="category-success" class="success-banner" hidden>
+            New category added successfully!
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-list-card">
+        <div class="section-heading">
+          <div>
+            <p class="section-tag">Current Catalog</p>
+            <h2>Manage listed products</h2>
+          </div>
+        </div>
+        <div id="admin-product-list" class="admin-product-list"></div>
+      </section>
+    </main>
+    <footer class="site-footer-mini">
+      <p>© 2026 VoltKart Admin | Powered by TVE</p>
+    </footer>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div id="edit-modal" class="modal-overlay" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Product Details</h3>
+        <button id="close-modal" class="close-icon" type="button">&times;</button>
+      </div>
+      <form id="edit-form" class="admin-form">
+        <input type="hidden" name="productId">
+        <div class="admin-form-grid">
+          <label>
+            Component Name
+            <input name="name" type="text" placeholder="e.g. Arduino Nano" required>
+          </label>
+          <label>
+            Category
+            <select name="category" id="edit-category-select" required>
+              <!-- Populated by JS -->
+            </select>
+          </label>
+          <label>
+            Price (in Rs.)
+            <div class="input-group">
+              <span class="input-prefix">Rs.</span>
+              <input name="price" type="number" min="0" step="any" required>
+            </div>
+          </label>
+          <label>
+            Stock Note
+            <input name="stock" type="text" placeholder="e.g. 50 units ready" required>
+          </label>
+        </div>
+        <label>
+          Description
+          <textarea name="description" rows="3" placeholder="Technical specifications..." required></textarea>
+        </label>
+        <label>
+          Replace Image (Optional)
+          <input name="image" type="file" accept="image/*">
+        </label>
+        <div class="modal-footer">
+          <button type="button" class="text-button" id="cancel-edit">Cancel</button>
+          <button type="submit" class="primary-button">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
