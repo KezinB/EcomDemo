@@ -2,7 +2,7 @@
 
 A high-performance, immersive electronic components marketplace featuring a modern **Glassmorphism** design and a streamlined **Enquiry-based** checkout system.
 
-![VoltKart Banner](https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1200)
+https://kezinb.github.io/EcomDemo/
 
 ## ✨ Core Features
 
