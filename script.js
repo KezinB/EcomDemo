@@ -453,6 +453,14 @@ function setupEnquiryForm(products) {
       setTimeout(() => { successBanner.hidden = true; }, 5000);
     } catch (error) {
       console.error("Submission Error:", error);
+      alert("Error: " + error.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+}
+
 // Admin Dashboard Helpers
 function setupAdminTabs() {
   const tabs = document.querySelectorAll('.tab-btn');
@@ -474,38 +482,90 @@ function setupAdminTabs() {
 
 function setupLeadsDashboard() {
   const leadsFeed = document.getElementById('leads-feed');
+  const downloadBtn = document.getElementById('download-csv-btn');
   if (!leadsFeed) return;
 
+  let currentLeads = [];
+
   onSnapshot(query(collection(db, "leads"), orderBy("timestamp", "desc")), (snapshot) => {
-    const leads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    currentLeads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
-    if (leads.length === 0) {
+    if (currentLeads.length === 0) {
       leadsFeed.innerHTML = '<div class="empty-state">No leads yet. Customer enquiries will appear here.</div>';
       return;
     }
 
-    leadsFeed.innerHTML = leads.map(lead => `
-      <div class="lead-card">
-        <div class="lead-header">
-          <div>
+    leadsFeed.innerHTML = currentLeads.map((lead, index) => {
+      const idx = currentLeads.length - index;
+      const leadName = lead.name || lead.customerName || 'Anonymous User';
+      const leadEmail = lead.email || lead.customerEmail || 'N/A';
+      
+      return `
+        <div class="lead-row" data-lead-id="${lead.id}">
+          <div class="lead-summary">
+            <span class="lead-index">#${idx}</span>
+            <div class="lead-info">
+              <h4>Enquiry from ${leadName}</h4>
+              <p class="time">${new Date(lead.timestamp).toLocaleString()}</p>
+            </div>
+            <div class="lead-meta">${lead.phone || 'N/A'}</div>
             <span class="lead-status ${lead.status || 'pending'}">${lead.status || 'pending'}</span>
-            <p class="time">${new Date(lead.timestamp).toLocaleString()}</p>
           </div>
-          <h4>Enquiry from ${lead.name || 'Anonymous User'}</h4>
+          <div class="lead-details">
+            <div class="lead-content">
+              <div class="lead-contact-grid">
+                <div class="lead-contact-item"><strong>Full Name</strong> ${leadName}</div>
+                <div class="lead-contact-item"><strong>Email Address</strong> ${leadEmail}</div>
+                <div class="lead-contact-item"><strong>Phone Number</strong> ${lead.phone || 'N/A'}</div>
+                <div class="lead-contact-item"><strong>Reference ID</strong> ${lead.id.substring(0, 8)}</div>
+              </div>
+              <div class="lead-message-box">
+                <strong>Message / Enquiry Details:</strong><br>
+                ${lead.message || 'No specific message provided.'}
+              </div>
+            </div>
+          </div>
         </div>
-        <p class="customer"><strong>Email:</strong> ${lead.email || 'N/A'} | <strong>Phone:</strong> ${lead.phone || 'N/A'}</p>
-        <div class="items">
-          <strong>Enquiry Details:</strong>\n${lead.message || 'No message provided.'}
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+
+    // Attach Toggle Listeners
+    document.querySelectorAll('.lead-row').forEach(row => {
+      row.addEventListener('click', () => {
+        row.classList.toggle('expanded');
+      });
+    });
   });
+
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => downloadLeadsCSV(currentLeads));
+  }
 }
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
-    }
-  });
+
+function downloadLeadsCSV(leads) {
+  if (!leads.length) return alert("No data to export!");
+
+  // CSV Headers (Index, Name, Email, Phone, Status, Timestamp)
+  const headers = ["Index", "Customer Name", "Email", "Phone", "Status", "Date"];
+  const rows = leads.map((l, i) => [
+    leads.length - i,
+    `"${l.name || 'Anonymous'}"`,
+    `"${l.email || 'N/A'}"`,
+    `"${l.phone || 'N/A'}"`,
+    l.status || 'pending',
+    new Date(l.timestamp).toLocaleString()
+  ]);
+
+  const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `voltkart_leads_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 // Admin Automation: SKU Generation
