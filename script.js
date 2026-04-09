@@ -58,8 +58,9 @@ async function saveCategory(name) {
 
 function parsePrice(priceStr) {
   if (!priceStr) return 0;
-  // Extract number from "Rs. 250 / piece" or similar formats
-  const match = priceStr.match(/\d+(\.\d+)?/);
+  // Remove commas and extract number (handles "Rs. 1,500.00 / piece")
+  const sanitized = priceStr.toString().replace(/,/g, '');
+  const match = sanitized.match(/\d+(\.\d+)?/);
   return match ? parseFloat(match[0]) : 0;
 }
 
