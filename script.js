@@ -218,9 +218,6 @@ async function renderStorefront() {
   
   if (!grid) return;
 
-  const products = await loadProducts();
-  const categories = await loadCategories();
-
   const updateGrid = () => {
     const cart = loadCart();
     // Get search term from whichever input is active/present
@@ -549,8 +546,8 @@ function downloadLeadsCSV(leads) {
   const headers = ["Index", "Customer Name", "Email", "Phone", "Status", "Date"];
   const rows = leads.map((l, i) => [
     leads.length - i,
-    `"${l.name || 'Anonymous'}"`,
-    `"${l.email || 'N/A'}"`,
+    `"${l.name || l.customerName || 'Anonymous'}"`,
+    `"${l.email || l.customerEmail || 'N/A'}"`,
     `"${l.phone || 'N/A'}"`,
     l.status || 'pending',
     new Date(l.timestamp).toLocaleString()
@@ -875,19 +872,30 @@ function setupScrollProgress() {
   updateProgress(); // Initialize on load
 }
 
+let products = [];
+let categories = [];
+
 async function initializePage() {
   const page = document.body.dataset.page;
   
+  // 1. First, Load Data Globally
+  try {
+    categories = await loadCategories();
+    products = await loadProducts();
+  } catch (err) {
+    console.warn("Global data loading failure:", err);
+  }
+
+  // 2. Setup Page-Specific Modules
   if (page === "storefront") {
     setupScrollProgress();
     
-    // Sidebar Cart Listeners - ATTACH THESE FIRST
+    // Sidebar Cart Listeners
     const closeBtn = document.getElementById('close-cart');
     const overlay = document.getElementById('cart-overlay');
 
-    // Global listener for all Cart Open triggers (Header, Hero, etc.)
+    // Global listener for all Cart Open triggers
     document.addEventListener('click', (e) => {
-      // Cart Trigger
       const cartTrigger = e.target.closest('[href="#cart-panel"], .cart-chip');
       if (cartTrigger) {
         e.preventDefault();
@@ -895,21 +903,18 @@ async function initializePage() {
         return;
       }
 
-      // Add to Cart (Delegated for static and dynamic buttons)
       const addBtn = e.target.closest('.add-to-cart');
       if (addBtn) {
         addToCart(addBtn.dataset.productId);
         updateCartUi(products);
-        renderStorefront(); // Refresh grid to show "in cart" status
-        toggleCart(true);   // Show feedback
+        renderStorefront();
+        toggleCart(true);
         return;
       }
 
-      // Details Trigger
       const detailsTrigger = e.target.closest('[data-trigger="details"]');
       const actionButton = e.target.closest('button, .read-more-btn');
       
-      // Open details ONLY if we clicked the card and NOT a button inside it
       if (detailsTrigger && !actionButton) {
         openProductDetails(detailsTrigger.dataset.productId);
         return;
@@ -925,31 +930,21 @@ async function initializePage() {
     if (cartOverlay) cartOverlay.addEventListener('click', () => toggleCart(false));
     if (closeDetailsBtn) closeDetailsBtn.addEventListener('click', () => toggleDetails(false));
     if (detailsOverlay) detailsOverlay.addEventListener('click', () => toggleDetails(false));
+
+    // Render initial storefront state
+    await renderStorefront();
+    updateCartUi(products);
+    setupEnquiryForm(products);
   }
 
-  // Now load data
-  try {
-    const categories = await loadCategories();
-    const products = await loadProducts();
-
-    if (page === "storefront") {
-      await renderStorefront();
-      updateCartUi(products);
-      setupEnquiryForm(products);
-    }
-
-    if (page === "admin") {
-      renderCategorySelect(categories);
-      await setupAdminForm();
-      await setupCategoryForm();
-      await setupEditLogic();
-      setupAdminTabs();
-      setupLeadsDashboard();
-      handleSkuSuggestion();
-    }
-  } catch (err) {
-    console.warn("Data loading partial failure:", err);
-    // Even if data fails, UI listeners above are already active!
+  if (page === "admin") {
+    renderCategorySelect(categories);
+    await setupAdminForm();
+    await setupCategoryForm();
+    await setupEditLogic();
+    setupAdminTabs();
+    setupLeadsDashboard();
+    handleSkuSuggestion();
   }
 }
 

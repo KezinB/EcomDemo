@@ -1444,3 +1444,48 @@ textarea {
   margin: 0;
   letter-spacing: 0.05em;
 }
+
+/* WhatsApp Floating Button */
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: rgba(37, 211, 102, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(37, 211, 102, 0.3);
+  border-radius: 999px;
+  color: #128c7e;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.whatsapp-float:hover {
+  transform: translateY(-4px) scale(1.02);
+  background: rgba(37, 211, 102, 0.25);
+  box-shadow: 0 15px 40px rgba(37, 211, 102, 0.2);
+}
+
+.whatsapp-float svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+@media (max-width: 768px) {
+  .whatsapp-float span {
+    display: none;
+  }
+  .whatsapp-float {
+    padding: 14px;
+    bottom: 20px;
+    right: 20px;
+  }
+}
