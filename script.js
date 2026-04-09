@@ -56,11 +56,30 @@ async function saveCategory(name) {
   await addDoc(collection(db, "categories"), { name });
 }
 
-function getCartTotals(cart) {
-  return {
-    lines: cart.length,
-    quantity: cart.reduce((total, item) => total + item.quantity, 0)
-  };
+function parsePrice(priceStr) {
+  if (!priceStr) return 0;
+  // Extract number from "Rs. 250 / piece" or similar formats
+  const match = priceStr.match(/\d+(\.\d+)?/);
+  return match ? parseFloat(match[0]) : 0;
+}
+
+function getCartTotals(cart, products = []) {
+  let lines = cart.length;
+  let quantity = 0;
+  let amount = 0;
+
+  cart.forEach(item => {
+    quantity += item.quantity;
+    if (products.length > 0) {
+      const product = products.find(p => p.id === item.id);
+      if (product) {
+        const price = parsePrice(product.price);
+        amount += price * item.quantity;
+      }
+    }
+  });
+
+  return { lines, quantity, amount };
 }
 
 function getProductImage(product) {
@@ -256,7 +275,7 @@ function updateCartUi(products) {
   const enquiryProduct = document.getElementById("enquiry-product");
   const enquiryMessage = document.getElementById("enquiry-message");
   const submitButton = document.getElementById("submit-enquiry");
-  const totals = getCartTotals(cart);
+  const totals = getCartTotals(cart, products);
 
   if (cartCount) {
     cartCount.textContent = String(totals.quantity);
@@ -268,6 +287,11 @@ function updateCartUi(products) {
 
   if (cartQuantityCount) {
     cartQuantityCount.textContent = String(totals.quantity);
+  }
+
+  const cartTotalAmount = document.getElementById("cart-total-amount");
+  if (cartTotalAmount) {
+    cartTotalAmount.textContent = `Rs. ${totals.amount.toLocaleString()}`;
   }
 
   if (cartItemsMetric) {
